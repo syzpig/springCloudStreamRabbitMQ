@@ -1,0 +1,54 @@
+server:
+  port: 8080
+
+#rabbit的配置信息  通用配置
+spring:
+  rabbitmq:
+    addresses: localhost
+    username: syz
+    password: 12345678
+    #下面这个配置优先级太高，在配置中心分模块(分文件)的场景下后面的binder属性无法被覆盖，如果有存在多个vhost的情况下建议将该属性注释掉
+    #virtual-host: boss
+
+#当存在多个binder时必须指定一个默认的binder：
+# 设置一个默认的binder，如果不配置将报错
+spring:
+  cloud:
+    stream:
+      defaultBinder: boss
+
+#消费者配置 配置ecm消费者的服务器配置信息
+spring:
+  cloud:
+    stream:
+      binders:
+        ecm:
+          type: rabbit
+#spring.cloud.stream.binders.ecm.environment.spring.rabbitmq.addresses=${spring.rabbitmq.addresses}
+#spring.cloud.stream.binders.ecm.environment.spring.rabbitmq.username=${spring.rabbitmq.username}
+#spring.cloud.stream.binders.ecm.environment.spring.rabbitmq.password=${spring.rabbitmq.password}
+          environment:
+            spring:
+              rabbitmq:
+                virtual-host: ecm
+#交易系统ECM的货柜模板变更消费者
+        ecm_shop_template:
+          binder: ecm
+        ecm_shop_template:
+          destination: newEcm
+#默认情况下同一个队列的只能被同一个group的消费者消费
+        ecm_shop_template:
+          group: 这里是消费者的名称
+        ecm_shop_template:
+          contentType: text/plain
+#指定该主题的类型为广播模式
+        ecm_shop_template:
+          consumer:
+            exchangeType: fanout
+#消费失败的消息放入dlq队列
+        ecm_shop_template:
+          consumer:
+            autoBindDlq: true
+        ecm_shop_template:
+          consumer:
+            republishToDlq: true

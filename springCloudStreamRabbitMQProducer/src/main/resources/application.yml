@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+#rabbit的配置信息  通用配置
+spring:
+  rabbitmq:
+    addresses: localhost
+    username: syz
+    password: 12345678
+    #下面这个配置优先级太高，在配置中心分模块(分文件)的场景下后面的binder属性无法被覆盖，如果有存在多个vhost的情况下建议将该属性注释掉
+    #virtual-host: boss
+
+#当存在多个binder时必须指定一个默认的binder：
+# 设置一个默认的binder，如果不配置将报错
+spring:
+  cloud:
+    stream:
+      defaultBinder: boss
+
+#生产者配置
+# BOSS消息生产者服务器配置
+spring:
+  cloud:
+    stream:
+      binders:
+        boss:
+          type: rabbit
+ #spring.cloud.stream.binders.boss.environment.spring.rabbitmq.addresses=${spring.rabbitmq.addresses}
+ #spring.cloud.stream.binders.boss.environment.spring.rabbitmq.username=${spring.rabbitmq.username}
+ #spring.cloud.stream.binders.boss.environment.spring.rabbitmq.password=${spring.rabbitmq.password}
+          environment:
+            spring:
+              rabbitmq:
+                virtual-host: boss
+
+ #BOSS基础信息生产者
+      bindings:
+        message_output:
+          destination: exchange的名称
+ #exchange的类型为广播模式
+      rabbit:
+        bindings:
+          message_output:
+            producer.:
+              exchangeType: fanout
