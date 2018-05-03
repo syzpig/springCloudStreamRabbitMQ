@@ -38,8 +38,9 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-amqp</artifactId>
+			<artifactId>spring-cloud-boot-starter-stream-amqp</artifactId>
 		</dependency>
+
 	</dependencies>
 
 	<build>
